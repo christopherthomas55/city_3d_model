@@ -5,17 +5,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shader.h"
 
-#include  <vector>
+#include <vector>
 #include <iostream>
 #include <math.h>
 
-#define OBJ_WIDTH 800
-#define OBJ_HEIGHT 800
-#define WIND_WIDTH 1200
-#define WIND_HEIGHT 900
-#define DRAW_DISTANCE 5000.0f
+#include "shader.h"
+#include "config.h"
+#include "Mesh.h"
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -38,13 +36,13 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 float lastX = 400, lastY = 300;
 bool firstMouse = true;
-bool fill = false;
-bool animated = true;
-bool points = false;
 
 
 int main(int argc, char* argv[]){
-    glfwInit();
+    if(!glfwInit()){
+        std::cout << "Failed glfw init";
+        return -1;
+    }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -56,31 +54,13 @@ int main(int argc, char* argv[]){
                 glfwTerminate();
                     return -1;
     }
-    glfwMakeContextCurrent(window);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-            std::cout << "Failed to initialize GLAD" << std::endl;
-                return -1;
-    }    
+    glfwMakeContextCurrent(window);
+    gladLoadGL();
 
     glViewport(0, 0, WIND_WIDTH, WIND_HEIGHT);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); 
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-
-    // BEGIN VERTEX SHADER
-    //float vertices[] = {
-    //    // positions        // colors
-    //    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-    //    0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 0.0f,
-    //    0.0f,  0.5f, -0.5f,   0.0f, 1.0f, 1.0f,
-    //    0.5f, 0.5f, 0.5f,    1.0f, 0.0f, 1.0f,
-    //};  
-
-    //unsigned int indices[] = {
-    //    0, 1, 3,
-    //    1, 2, 3
-    //};
 
     float xwavelength = 10.0f;
     float xamplitude = 50.0f;
@@ -117,27 +97,7 @@ int main(int argc, char* argv[]){
         }
     }
 
-    // * DELEER HERE WHEN MESH READY
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), &vertices[0], GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indices.size(), &indices[0], GL_STATIC_DRAW);
-
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
-    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
-    //DELETE HERE WHEN MESH END
+    Mesh mesh = Mesh(vertices, indices);
 
     if(!fill){
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -146,7 +106,6 @@ int main(int argc, char* argv[]){
     //Shader ourShader("shaders/vertex.vs", "shaders/color.fs");
     Shader ourShader("shaders/vertex_camera.vs", "shaders/color.fs");
 
-    // perspective looking matrix
     glm::mat4 projection;
     glm::mat4 view;
 
@@ -155,8 +114,6 @@ int main(int argc, char* argv[]){
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-    const unsigned int NUM_STRIPS = OBJ_HEIGHT - 1;
-    const unsigned int NUM_VERTS_PER_STRIP = 4*(OBJ_WIDTH - 2);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -192,47 +149,22 @@ int main(int argc, char* argv[]){
             {
                 for(unsigned int j = 0; j<OBJ_WIDTH; j++)
                 {
-                    // TODO - MESH.update(6*(OBJ_WIDTH*i + j) + 3, xamplitude*cos(timeOffset + j/xwavelength) + yamplitude*cos(timeOffset+i/ywavelength);
-                    // TODO - MESH.update(6*(OBJ_WIDTH*i + j) + 3, cos(timeOffset + j/40.0f)
-                    vertices[6*(OBJ_WIDTH*i + j) + 1] = xamplitude*cos(timeOffset + j/xwavelength) + yamplitude*cos(timeOffset+i/ywavelength);
-                    vertices[6*(OBJ_WIDTH*i + j) + 3] = cos(timeOffset + j/40.0f);
-                    //vertices[6*(OBJ_WIDTH*i + j) + 4] = cos(timeOffset + j/20.0f);
-                    //vertices[6*(OBJ_WIDTH*i + j) + 5] = cos(timeOffset + j/7.0f);
+                    vertices.at(6*(OBJ_WIDTH*i + j) + 1) = xamplitude*cos(timeOffset + j/xwavelength) + yamplitude*cos(timeOffset+i/ywavelength);
                 }
             }
-
-
-        //TODO
-        mesh.buffer();
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), &vertices[0], GL_STATIC_DRAW);
+            mesh.swap_buffer(vertices);
         }
 
         unsigned int modelLoc = glGetUniformLocation(ourShader.getID(), "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        glBindVertexArray(VAO);
-
-        //TODO
         mesh.draw();
-
-        if (!points){
-            for(unsigned int strip=0; strip < NUM_STRIPS; ++strip)
-            {
-                glDrawElements(GL_TRIANGLE_STRIP, NUM_VERTS_PER_STRIP, GL_UNSIGNED_INT, (void*)(sizeof(unsigned int)*NUM_VERTS_PER_STRIP*strip));
-            }
-        } else 
-        {
-            glDrawElements(GL_POINTS, indices.size(), GL_UNSIGNED_INT, 0);
-
-        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();    
         glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
     }
 
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
     glDeleteProgram(ourShader.getID());
 
     glfwTerminate();
@@ -260,6 +192,10 @@ void processInput(GLFWwindow *window)
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        cameraPos += cameraUp * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        cameraPos -= cameraUp * cameraSpeed;
 }
 
 void scroll_callback(GLFWwindow*, double xoffset, double yoffset)

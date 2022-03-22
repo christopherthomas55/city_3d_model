@@ -1,12 +1,11 @@
 #from lazyfoo tutorials
-OBJS = main.cpp ../glad/src/glad.c shader.cpp
+OBJS = main.cpp shader.cpp Mesh.cpp glad.c
 
 CXX = g++
 
-COMPILER_FLAGS = -w
+COMPILER_FLAGS = -w -g
 
-LINKER_FLAGS = -lglfw -lGLU -lGL -lXrandr -lXxf86vm -lXi -lXinerama -lX11 -lrt -ldl
-
+LINKER_FLAGS = -lglfw -lGLU -lGL -ldl
 LIBRARY_PATH = includes/
 
 OBJ_NAME = main 
