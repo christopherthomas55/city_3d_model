@@ -142,6 +142,8 @@ int main(int argc, char* argv[]){
         unsigned int projectionLoc = glGetUniformLocation(ourShader.getID(), "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
+        unsigned int modelLoc = glGetUniformLocation(ourShader.getID(), "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
         if(animated){
             for(unsigned int i = 0; i<OBJ_HEIGHT; i++)
@@ -153,9 +155,6 @@ int main(int argc, char* argv[]){
             }
             mesh.swap_buffer(vertices);
         }
-
-        unsigned int modelLoc = glGetUniformLocation(ourShader.getID(), "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
         mesh.draw();
 

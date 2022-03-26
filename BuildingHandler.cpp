@@ -1,6 +1,6 @@
 #include "BuildingHandler.h"
 
-
+bool TESTING = true;
 
 BuildingHandler::BuildingHandler(std::string path){
     std::ifstream myfile(buildings_path);
@@ -43,6 +43,10 @@ BuildingHandler::BuildingHandler(std::string path){
                     indices_cumsum.push_back(numIndices);
                     count = 0;
                     isBeginning = true;
+                    if(TESTING)
+                    {
+                        break;
+                    }
                 }
             }else{
                 if(isBeginning)
@@ -63,12 +67,11 @@ BuildingHandler::BuildingHandler(std::string path){
                         // Still need to figure out top, triangle fan in center maybe?
                         lon = std::stof(line);
                         vertices.push_back(lat);
-
-                        vertices.push_back(lon);
                         vertices.push_back(0.0f);
-                        vertices.push_back(lat);
                         vertices.push_back(lon);
+                        vertices.push_back(lat);
                         vertices.push_back(height);
+                        vertices.push_back(lon);
                         isLat = true;
                         indices.push_back(globalCount++);
                         indices.push_back(globalCount++);

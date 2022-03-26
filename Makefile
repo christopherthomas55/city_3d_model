@@ -4,7 +4,7 @@ OBJS = main.cpp shader.cpp Mesh.cpp glad.c BuildingHandler.cpp
 CXX = g++
 
 COMPILER_FLAGS = -w -g -std=c++11
-LINKER_FLAGS = -lglfw -lGLU -lGL -ldl
+LINKER_FLAGS = -lglfw -lGLU -lGL -ldl -lCGAL 
 LIBRARY_PATH = includes/
 
 OBJ_NAME = main
