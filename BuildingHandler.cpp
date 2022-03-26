@@ -1,6 +1,6 @@
 #include "BuildingHandler.h"
 
-bool TESTING = true;
+bool TESTING = false;
 
 BuildingHandler::BuildingHandler(std::string path){
     std::ifstream myfile(buildings_path);

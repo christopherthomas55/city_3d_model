@@ -146,11 +146,17 @@ int main(int argc, char* argv[]){
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
         if(animated){
+            float dist;
             for(unsigned int i = 0; i<OBJ_HEIGHT; i++)
             {
                 for(unsigned int j = 0; j<OBJ_WIDTH; j++)
                 {
-                    vertices.at(6*(OBJ_WIDTH*i + j) + 1) = xamplitude*cos(timeOffset + j/xwavelength) + yamplitude*cos(timeOffset+i/ywavelength);
+                    // Waves
+                    //vertices.at(6*(OBJ_WIDTH*i + j) + 1) = xamplitude*cos(timeOffset + j/xwavelength) + yamplitude*cos(timeOffset+i/ywavelength);
+
+                    dist = std::sqrt(std::pow(j - OBJ_WIDTH/2.0, 2) +  std::pow(i - OBJ_HEIGHT/2.0, 2));
+                    //Circles
+                    vertices.at(6*(OBJ_WIDTH*i + j) + 1) = (20.0) * cos(-.05* dist + 20.0*timeOffset);
                 }
             }
             mesh.swap_buffer(vertices);
