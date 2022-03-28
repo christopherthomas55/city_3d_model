@@ -10,9 +10,9 @@
 #include <iostream>
 #include <math.h>
 
-#include "shader.h"
-#include "config.h"
-#include "Mesh.h"
+#include "src/shader.h"
+#include "src/config.h"
+#include "src/Mesh.h"
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);

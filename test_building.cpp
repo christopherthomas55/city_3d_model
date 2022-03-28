@@ -10,10 +10,10 @@
 #include <iostream>
 #include <math.h>
 
-#include "shader.h"
-#include "config.h"
+#include "src/shader.h"
+#include "src/config.h"
 
-#include "BuildingHandler.h"
+#include "src/BuildingHandler.h"
 
 // Boiler plate here
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -112,6 +112,23 @@ int main(int argc, char* argv[]){
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+
+    // Horribly inefficient
+    unsigned int VBO2, VAO2, EBO2;
+    glGenVertexArrays(1, &VAO2);
+    glGenBuffers(1, &VBO2);
+    //glGenBuffers(1, &EBO2);
+
+    glBindVertexArray(VAO2);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*handler.roof_vertices.size(), &handler.roof_vertices[0], GL_STATIC_DRAW);
+
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indices.size(), &indices[0], GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // End inefficient
     Shader ourShader("shaders/vertex_camera_no_color.vs", "shaders/red_color.fs");
 
     while(!glfwWindowShouldClose(window))
@@ -152,6 +169,9 @@ int main(int argc, char* argv[]){
         {
             glDrawElements(GL_TRIANGLE_STRIP, vertexCounter[buildingID], GL_UNSIGNED_INT, (void*)(sizeof(unsigned int)*cumsumIndices[buildingID]));
         }
+
+        glBindVertexArray(VAO2);
+        glDrawArrays(GL_TRIANGLES, 0, handler.roof_vertices.size()/3);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

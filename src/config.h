@@ -12,10 +12,13 @@
 const bool fill = false;
 const bool animated = true;
 const bool points = false;
+const bool TESTING = true;
 
 const unsigned int NUM_STRIPS = OBJ_HEIGHT - 1;
 const unsigned int NUM_VERTS_PER_STRIP = 4*(OBJ_WIDTH - 2);
 
 const std::string buildings_path = "python_data_ingestion/render_instructions.txt";
+
+const bool verbose = true;
 
 #endif

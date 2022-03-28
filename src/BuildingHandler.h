@@ -11,7 +11,7 @@
 
 
 #include "config.h"
-#include "Mesh.h"
+#include "Building.h"
 
 
 class BuildingHandler
@@ -21,6 +21,12 @@ public:
     std::vector<unsigned int> indices;
     std::vector<unsigned int> vertex_count;
     std::vector<unsigned int> indices_cumsum;
+    std::vector<Building>     buildings;
+
+
+    std::vector<float> roof_vertices;
+    std::vector<unsigned int> roof_indices;
+
 
     BuildingHandler(std::string path);
 

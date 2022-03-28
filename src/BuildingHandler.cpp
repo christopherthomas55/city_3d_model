@@ -1,6 +1,5 @@
 #include "BuildingHandler.h"
 
-bool TESTING = false;
 
 BuildingHandler::BuildingHandler(std::string path){
     std::ifstream myfile(buildings_path);
@@ -26,6 +25,8 @@ BuildingHandler::BuildingHandler(std::string path){
         int secondIndex = 1;
         int numIndices = 0;
 
+        Building temp_building(0);
+
         // first needs to be 0 since this is setting pointer in draw elements
         indices_cumsum.push_back(numIndices);
         while ( getline (myfile,line) )
@@ -43,6 +44,7 @@ BuildingHandler::BuildingHandler(std::string path){
                     indices_cumsum.push_back(numIndices);
                     count = 0;
                     isBeginning = true;
+                    buildings.push_back(temp_building);
                     if(TESTING)
                     {
                         break;
@@ -55,6 +57,8 @@ BuildingHandler::BuildingHandler(std::string path){
                     firstIndex = globalCount;
                     secondIndex = globalCount + 1;
                     isBeginning = false;
+                    //temp_building = Building(height);
+                    temp_building.height = height;
                 }else{
                     if(isLat)
                     {
@@ -77,6 +81,7 @@ BuildingHandler::BuildingHandler(std::string path){
                         indices.push_back(globalCount++);
                         numIndices += 2;
                         count += 2;
+                        temp_building.add_point(lat, lon);
                     }
 
                 }
@@ -90,6 +95,22 @@ BuildingHandler::BuildingHandler(std::string path){
     else std::cout << "Unable to open file " + buildings_path;
 
 
+    for(auto & building: buildings)
+    {
+        building.triangulate();
+        Finite_faces_iterator it;
+        int numIndices = 0;
+
+        for(it = building.T.finite_faces_begin(); it != building.T.finite_faces_end(); it++)
+        {
+            for(int i=0; i<3; i++)
+            {
+                roof_vertices.push_back(it->vertex(i)->point().x());
+                roof_vertices.push_back(building.height);
+                roof_vertices.push_back(it->vertex(i)->point().y());
+            }
+        }
+    }
     // normalize x and y cause it's in m
     // NO TAKEN CARE OF IN PYTHON
     //for(int i=0; i < 1; i++)
