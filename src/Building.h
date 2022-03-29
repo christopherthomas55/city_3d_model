@@ -42,6 +42,8 @@ public:
     void setHeight(float x) {height = x;};
     void reset();
 
+    bool isInterior()
+
 private:
 
 };

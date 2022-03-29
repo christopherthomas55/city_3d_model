@@ -107,19 +107,7 @@ BuildingHandler::BuildingHandler(std::string path){
         {
             std::cout << "Vertices - " << building.vertices.size() << " || Height - " << building.height << std::endl;
             building.triangulate();
-        
-            Finite_faces_iterator it;
-            int numIndices = 0;
 
-            for(it = building.T.finite_faces_begin(); it != building.T.finite_faces_end(); it++)
-            {
-                for(int i=0; i<3; i++)
-                {
-                    roof_vertices.push_back(it->vertex(i)->point().x());
-                    roof_vertices.push_back(building.height);
-                    roof_vertices.push_back(it->vertex(i)->point().y());
-                }
-            }
         } catch(...) //CGAL::Assertion_exception isn't working quick
         {
             // Should make convex hull or take out
