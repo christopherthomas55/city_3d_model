@@ -25,7 +25,12 @@ BuildingHandler::BuildingHandler(std::string path){
         int secondIndex = 1;
         int numIndices = 0;
 
-        Building temp_building(0);
+        int buildingIndex = 0;
+
+        float minx = 0.0f;
+        float maxx = 0.0f;
+        float maxy = 0.0f;
+        float miny = 0.0f;
 
         // first needs to be 0 since this is setting pointer in draw elements
         indices_cumsum.push_back(numIndices);
@@ -44,7 +49,7 @@ BuildingHandler::BuildingHandler(std::string path){
                     indices_cumsum.push_back(numIndices);
                     count = 0;
                     isBeginning = true;
-                    buildings.push_back(temp_building);
+                    buildingIndex++;
                     if(TESTING)
                     {
                         break;
@@ -57,8 +62,9 @@ BuildingHandler::BuildingHandler(std::string path){
                     firstIndex = globalCount;
                     secondIndex = globalCount + 1;
                     isBeginning = false;
-                    //temp_building = Building(height);
-                    temp_building.height = height;
+                    buildings.push_back(Building());
+                    buildings[buildingIndex].setHeight(height);
+
                 }else{
                     if(isLat)
                     {
@@ -81,7 +87,7 @@ BuildingHandler::BuildingHandler(std::string path){
                         indices.push_back(globalCount++);
                         numIndices += 2;
                         count += 2;
-                        temp_building.add_point(lat, lon);
+                        buildings[buildingIndex].add_point(lat, lon);
                     }
 
                 }
@@ -97,18 +103,27 @@ BuildingHandler::BuildingHandler(std::string path){
 
     for(auto & building: buildings)
     {
-        building.triangulate();
-        Finite_faces_iterator it;
-        int numIndices = 0;
-
-        for(it = building.T.finite_faces_begin(); it != building.T.finite_faces_end(); it++)
+        try
         {
-            for(int i=0; i<3; i++)
+            std::cout << "Vertices - " << building.vertices.size() << " || Height - " << building.height << std::endl;
+            building.triangulate();
+        
+            Finite_faces_iterator it;
+            int numIndices = 0;
+
+            for(it = building.T.finite_faces_begin(); it != building.T.finite_faces_end(); it++)
             {
-                roof_vertices.push_back(it->vertex(i)->point().x());
-                roof_vertices.push_back(building.height);
-                roof_vertices.push_back(it->vertex(i)->point().y());
+                for(int i=0; i<3; i++)
+                {
+                    roof_vertices.push_back(it->vertex(i)->point().x());
+                    roof_vertices.push_back(building.height);
+                    roof_vertices.push_back(it->vertex(i)->point().y());
+                }
             }
+        } catch(...) //CGAL::Assertion_exception isn't working quick
+        {
+            // Should make convex hull or take out
+            std::cout << "Unable to process building roof and height " << building.height << std::endl;
         }
     }
     // normalize x and y cause it's in m

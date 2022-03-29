@@ -33,12 +33,14 @@ public:
     float height;
     Triangulation T;
 
-    Building(float height);
+    Building();
 
     void triangulate();
     void draw();
 
     void add_point(float x, float y) {vertices.push_back(Point(x, y));};
+    void setHeight(float x) {height = x;};
+    void reset();
 
 private:
 

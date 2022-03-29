@@ -84,16 +84,16 @@ int main(int argc, char* argv[]){
     std::vector<unsigned int> cumsumIndices = handler.getIndicesTracker();
     // Then boilerplate open gl again
 
-    for(int i=vertexCounter[0]*3 - 10; i < vertexCounter[0]*3+ 10; i++){
-        std::cout << i << ", " << vertices[i] << std::endl;
-    }
-    for(int i=vertexCounter[0] - 10; i < vertexCounter[0]+ 10; i++){
-        std::cout << i << ", " << indices[i] << std::endl;
-    }
+    //for(int i=vertexCounter[0]*3 - 10; i < vertexCounter[0]*3+ 10; i++){
+    //    std::cout << i << ", " << vertices[i] << std::endl;
+    //}
+    //for(int i=vertexCounter[0] - 10; i < vertexCounter[0]+ 10; i++){
+    //    std::cout << i << ", " << indices[i] << std::endl;
+    //}
 
-    for(int i=0; i < 3; i++){
-        std::cout << i << ", " << cumsumIndices[i] << std::endl;
-    }
+    //for(int i=0; i < 3; i++){
+    //    std::cout << i << ", " << cumsumIndices[i] << std::endl;
+    //}
 
 
     unsigned int VBO, VAO, EBO;
