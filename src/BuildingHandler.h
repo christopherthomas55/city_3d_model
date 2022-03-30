@@ -25,8 +25,6 @@ public:
 
 
     std::vector<float> roof_vertices;
-    std::vector<unsigned int> roof_indices;
-
 
     BuildingHandler(std::string path);
 

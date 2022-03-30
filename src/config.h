@@ -12,7 +12,7 @@
 const bool fill = false;
 const bool animated = true;
 const bool points = false;
-const bool TESTING = true;
+const bool TESTING = false;
 
 const unsigned int NUM_STRIPS = OBJ_HEIGHT - 1;
 const unsigned int NUM_VERTS_PER_STRIP = 4*(OBJ_WIDTH - 2);

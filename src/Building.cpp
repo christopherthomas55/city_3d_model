@@ -3,7 +3,7 @@
 
 
 // TODO - Dynamically change "inf" point instead of this. Alo maybe smarter algo
-Point(1000f, 1000f);
+Point inf_point(2000.0f, 2000.0f);
 
 Building::Building()
 {
@@ -19,23 +19,20 @@ void Building::triangulate(){
     }
 
     // Check if face is in point by using center and seeing if it interects with vertices odd times
-    
-        
     Finite_faces_iterator it;
     int numIndices = 0;
 
-    for(it = building.T.finite_faces_begin(); it != building.T.finite_faces_end(); it++)
+    for(it = T.finite_faces_begin(); it != T.finite_faces_end(); it++)
     {
         bool interior = true;
         for(int i=0; i<3; i++)
         {
-            T::Edge e(it, i);
+            Triangulation::Edge e(it, i);
             if(T.is_constrained(e))
             {
-                pass;
             } else
             {
-                interior = this.isInterior(e);
+                interior = this->isInterior(e);
             }
         }
 
@@ -44,28 +41,48 @@ void Building::triangulate(){
             for(int i=0; i<3; i++)
             {
                 roof_vertices.push_back(it->vertex(i)->point().x());
-                roof_vertices.push_back(building.height);
+                roof_vertices.push_back(height);
                 roof_vertices.push_back(it->vertex(i)->point().y());
             }
         }
     }
+}
 
-    //T.insert(vertices.begin(), vertices.end());
+// Ignoring edge case where the important edge matches an endpoint
+bool Building::isInterior(Triangulation::Edge e)
+{
 
-    //if(verbose){
-    //    Finite_faces_iterator it;
+    // Todo - make this better lol
+    // CGAL is very annoying. Next time I'm doing this myself
+    // https://stackoverflow.com/questions/4837179/getting-a-vertex-handle-from-an-edge-iterator
+    Triangulation::Face& f= *(e.first);
+    int i = e.second;
+    auto vs = f.vertex(f.cw(i));
+    auto vt =  f.vertex(f.ccw(i));
 
-    //    for(it = T.finite_faces_begin(); it != T.finite_faces_end(); it++)
-    //    {
-    //        for(int i=0; i<3; i++)
-    //        {
-    //            std::cout << it->vertex(i)->point().x() << "," << it->vertex(i)->point().y() << std::endl;
-    //        }
-    //        std::cout << "NEXT" << std::endl;
-    //    }
-    //}
+    Point test_p = CGAL::midpoint(vs->point(), vt->point());
+
+    Segment_2 test_s(test_p, inf_point);
 
 
+    std::vector<Segment_2> segments;
+    segments.push_back(Segment_2(vertices[0], vertices[vertices.size()-1]));
+    for(int i = 0; i<vertices.size() - 1; i++)
+    {
+        segments.push_back(Segment_2(vertices[i], vertices[i+1]));
+    }
+
+    int intersections = 0;
+    for(int i = 0; i < segments.size(); i++)
+    {
+        if(CGAL::do_intersect(test_s, segments[i]))
+        {
+            intersections++;
+        }
+    }
+
+    // If even, outside, if odd inside
+    return intersections%2;
 }
 
 void Building::reset()

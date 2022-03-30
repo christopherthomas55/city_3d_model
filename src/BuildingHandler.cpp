@@ -107,12 +107,14 @@ BuildingHandler::BuildingHandler(std::string path){
         {
             std::cout << "Vertices - " << building.vertices.size() << " || Height - " << building.height << std::endl;
             building.triangulate();
+            roof_vertices.insert(roof_vertices.end(), building.roof_vertices.begin(), building.roof_vertices.end());
 
         } catch(...) //CGAL::Assertion_exception isn't working quick
         {
             // Should make convex hull or take out
             std::cout << "Unable to process building roof and height " << building.height << std::endl;
         }
+
     }
     // normalize x and y cause it's in m
     // NO TAKEN CARE OF IN PYTHON
