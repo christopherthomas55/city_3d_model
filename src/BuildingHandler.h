@@ -22,9 +22,17 @@ public:
     std::vector<unsigned int> vertex_count;
     std::vector<unsigned int> indices_cumsum;
     std::vector<Building>     buildings;
+    Building                  ground_floor;
 
+    float minx = 0.0f;
+    float maxx = 0.0f;
+    float maxy = 0.0f;
+    float miny = 0.0f;
 
     std::vector<float> roof_vertices;
+    std::vector<float> ground_vertices;
+    std::vector<float> platform_vertices;
+
 
     BuildingHandler(std::string path);
 

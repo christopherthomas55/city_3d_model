@@ -27,11 +27,6 @@ BuildingHandler::BuildingHandler(std::string path){
 
         int buildingIndex = 0;
 
-        float minx = 0.0f;
-        float maxx = 0.0f;
-        float maxy = 0.0f;
-        float miny = 0.0f;
-
         // first needs to be 0 since this is setting pointer in draw elements
         indices_cumsum.push_back(numIndices);
         while ( getline (myfile,line) )
@@ -70,12 +65,17 @@ BuildingHandler::BuildingHandler(std::string path){
                     {
                         lat = std::stof(line);     
                         isLat = false;
+                        minx = (lat < minx) ? lat : minx;
+                        maxx = (lat > maxx) ? lat : maxx;
                     }
                     else
                     {
                         // Expectation to use gl triangle strip
                         // Still need to figure out top, triangle fan in center maybe?
                         lon = std::stof(line);
+                        miny = (lon < miny) ? lon : miny;
+                        maxy = (lon > maxy) ? lon : maxy;
+
                         vertices.push_back(lat);
                         vertices.push_back(0.0f);
                         vertices.push_back(lon);
@@ -105,7 +105,7 @@ BuildingHandler::BuildingHandler(std::string path){
     {
         try
         {
-            std::cout << "Vertices - " << building.vertices.size() << " || Height - " << building.height << std::endl;
+            //std::cout << "Vertices - " << building.vertices.size() << " || Height - " << building.height << std::endl;
             building.triangulate();
             roof_vertices.insert(roof_vertices.end(), building.roof_vertices.begin(), building.roof_vertices.end());
 
@@ -115,22 +115,44 @@ BuildingHandler::BuildingHandler(std::string path){
             std::cout << "Unable to process building roof and height " << building.height << std::endl;
         }
 
-    }
-    // normalize x and y cause it's in m
-    // NO TAKEN CARE OF IN PYTHON
-    //for(int i=0; i < 1; i++)
-    //{
-    //    float curAvg = 0;
-    //    int count = 0;
-    //    // Efficient compute avg
-    //    for(int j=i; j < vertices.size(); j+=3){
-    //        count++;
-    //        curAvg = curAvg + (vertices[j] - curAvg)/count;
-    //    }
-    //    // Now subtract to "center" (kinda weighted tho by building vertex count)
-    //    for(int j=i; j < vertices.size(); j+=3){
-    //        vertices[j] -= curAvg;
-    //    }
 
-    //}
+        // This is repeated code inside triangulate, but we do need to add these constraints to ground floor
+        // Watch out, verticces is a repeate dvariable name
+        ground_floor.T.insert_constraint(building.vertices[0], building.vertices[building.vertices.size()-1]);
+        ground_floor.add_segment(building.vertices[0], building.vertices[building.vertices.size()-1]);
+        ground_floor.setHeight(0.0f);
+        for(int i = 0; i<building.vertices.size() - 1; i++)
+        {
+            ground_floor.T.insert_constraint(building.vertices[i], building.vertices[i+1]);
+            ground_floor.add_segment(building.vertices[i], building.vertices[i+1]);
+        }
+        // End repeated code
+    }
+
+
+    minx -= building_platform_buffer;
+    minx -= building_platform_buffer;
+    miny += building_platform_buffer;
+    miny += building_platform_buffer;
+
+    std::cout << "Inserting ground box constraints" <<  std::endl;
+    ground_floor.T.insert_constraint(Point(minx , miny), Point(maxx, miny));  // _
+    ground_floor.add_segment(Point(minx , miny), Point(maxx, miny));
+
+    ground_floor.T.insert_constraint(Point(minx, miny), Point(minx, maxy));  // [
+    ground_floor.add_segment(Point(minx, miny), Point(minx, maxy));
+
+    ground_floor.T.insert_constraint(Point(maxx, miny), Point(maxx, maxy)); // ]
+    ground_floor.add_segment(Point(maxx, miny), Point(maxx, maxy));
+
+    ground_floor.T.insert_constraint(Point(minx, maxy), Point(maxx, maxy)); // ^-
+    ground_floor.add_segment(Point(minx, maxy), Point(maxx, maxy));
+
+    std::cout << "Triangulating ground now" <<  std::endl;
+    ground_floor.triangulate_manual_constraints();
+
+    roof_vertices.insert(roof_vertices.end(), ground_floor.roof_vertices.begin(), ground_floor.roof_vertices.end());
+    std::cout << "Done with all triangulation" <<  std::endl;
+
+
 }

@@ -16,7 +16,9 @@ const bool TESTING = false;
 
 const unsigned int NUM_STRIPS = OBJ_HEIGHT - 1;
 const unsigned int NUM_VERTS_PER_STRIP = 4*(OBJ_WIDTH - 2);
+const unsigned int building_platform_buffer = 10;
 
+//const std::string buildings_path = "python_data_ingestion/render_instructions_chi.txt";
 const std::string buildings_path = "python_data_ingestion/render_instructions.txt";
 
 const bool verbose = true;

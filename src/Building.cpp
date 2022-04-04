@@ -12,10 +12,12 @@ Building::Building()
 void Building::triangulate(){
 
     T.insert_constraint(vertices[0], vertices[vertices.size()-1]);
+    this->add_segment(vertices[0], vertices[vertices.size()-1]);
 
     for(int i = 0; i<vertices.size() - 1; i++)
     {
         T.insert_constraint(vertices[i], vertices[i+1]);
+        this->add_segment(vertices[i], vertices[i+1]);
     }
 
     // Check if face is in point by using center and seeing if it interects with vertices odd times
@@ -48,10 +50,46 @@ void Building::triangulate(){
     }
 }
 
+// Probably a slicker way of doing this
+void Building::triangulate_manual_constraints(){
+    // Check if face is in point by using center and seeing if it interects with vertices odd times
+    Finite_faces_iterator it;
+    int numIndices = 0;
+
+    int count = 0;
+    for(it = T.finite_faces_begin(); it != T.finite_faces_end(); it++)
+    {
+        count++;
+        bool interior = true;
+        for(int i=0; i<3; i++)
+        {
+            Triangulation::Edge e(it, i);
+
+
+            if(T.is_constrained(e))
+            {
+            } else
+            {
+                interior = this->isInterior(e);
+            }
+        }
+
+
+        if(interior)
+        {
+            for(int i=0; i<3; i++)
+            {
+                roof_vertices.push_back(it->vertex(i)->point().x());
+                roof_vertices.push_back(height);
+                roof_vertices.push_back(it->vertex(i)->point().y());
+            }
+        }
+    }
+}
+
 // Ignoring edge case where the important edge matches an endpoint
 bool Building::isInterior(Triangulation::Edge e)
 {
-
     // Todo - make this better lol
     // CGAL is very annoying. Next time I'm doing this myself
     // https://stackoverflow.com/questions/4837179/getting-a-vertex-handle-from-an-edge-iterator
@@ -63,15 +101,6 @@ bool Building::isInterior(Triangulation::Edge e)
     Point test_p = CGAL::midpoint(vs->point(), vt->point());
 
     Segment_2 test_s(test_p, inf_point);
-
-
-    std::vector<Segment_2> segments;
-    segments.push_back(Segment_2(vertices[0], vertices[vertices.size()-1]));
-    for(int i = 0; i<vertices.size() - 1; i++)
-    {
-        segments.push_back(Segment_2(vertices[i], vertices[i+1]));
-    }
-
     int intersections = 0;
     for(int i = 0; i < segments.size(); i++)
     {
@@ -80,7 +109,6 @@ bool Building::isInterior(Triangulation::Edge e)
             intersections++;
         }
     }
-
     // If even, outside, if odd inside
     return intersections%2;
 }

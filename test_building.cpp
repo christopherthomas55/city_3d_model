@@ -84,18 +84,8 @@ int main(int argc, char* argv[]){
     std::vector<unsigned int> cumsumIndices = handler.getIndicesTracker();
     // Then boilerplate open gl again
 
-    //for(int i=vertexCounter[0]*3 - 10; i < vertexCounter[0]*3+ 10; i++){
-    //    std::cout << i << ", " << vertices[i] << std::endl;
-    //}
-    //for(int i=vertexCounter[0] - 10; i < vertexCounter[0]+ 10; i++){
-    //    std::cout << i << ", " << indices[i] << std::endl;
-    //}
 
-    //for(int i=0; i < 3; i++){
-    //    std::cout << i << ", " << cumsumIndices[i] << std::endl;
-    //}
-
-
+    // Building sides
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -113,7 +103,8 @@ int main(int argc, char* argv[]){
     glEnableVertexAttribArray(0);
 
 
-    // Horribly inefficient
+    // Horribly inefficient start
+    // Building tops
     unsigned int VBO2, VAO2, EBO2;
     glGenVertexArrays(1, &VAO2);
     glGenBuffers(1, &VBO2);
@@ -128,7 +119,22 @@ int main(int argc, char* argv[]){
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+
+    // Building floor aka ground
+    //unsigned int VBO3, VAO3;
+    //glGenVertexArrays(1, &VAO3);
+    //glGenBuffers(1, &VBO3);
+
+    //glBindVertexArray(VAO3);
+    //glBindBuffer(GL_ARRAY_BUFFER, VBO3);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(float)*handler.ground.size(), &handler.ground[0], GL_STATIC_DRAW);
+
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+    //glEnableVertexAttribArray(0);
     // End inefficient
+
+
     Shader ourShader("shaders/vertex_camera_no_color.vs", "shaders/red_color.fs");
 
     while(!glfwWindowShouldClose(window))
@@ -173,6 +179,9 @@ int main(int argc, char* argv[]){
         glBindVertexArray(VAO2);
         glDrawArrays(GL_TRIANGLES, 0, handler.roof_vertices.size()/3);
 
+        //glBindVertexArray(VAO3);
+        //glDrawArrays(GL_TRIANGLES, 0, handler.roof_vertices.size()/3);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
@@ -195,6 +204,8 @@ void processInput(GLFWwindow *window)
     float cameraSpeed = 30.0f * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         cameraSpeed *= 10.0;
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        cameraSpeed *= 5.0;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -207,6 +218,10 @@ void processInput(GLFWwindow *window)
         cameraPos += cameraUp * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         cameraPos -= cameraUp * cameraSpeed;
+
+    // This doesn't seem to work
+    //if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+    //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void scroll_callback(GLFWwindow*, double xoffset, double yoffset)
