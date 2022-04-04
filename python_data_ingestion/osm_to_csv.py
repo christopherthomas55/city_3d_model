@@ -9,7 +9,7 @@ import utm
 # Not efficient at all, should rlngeall
 def main():
 
-    data = etree.parse("example_map.osm")
+    data = etree.parse("example_map_chicago.osm")
 
     # Buildings seem to follow this pattern
     buildings = data.xpath("way[tag[contains(@k, 'height')]]")
@@ -18,7 +18,7 @@ def main():
     first = True
     xsub = 0
     ysub = 0
-    with open("render_instructions.txt", "w+") as f:
+    with open("render_instructions_chi.txt", "w+") as f:
         for element in buildings:
             height = element.xpath("tag[contains(@k, 'height')]/@v")[0]
 

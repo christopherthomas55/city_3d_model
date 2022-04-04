@@ -3,8 +3,9 @@ OBJS = main.cpp src/shader.cpp src/Mesh.cpp glad.c src/BuildingHandler.cpp src/B
 
 CXX = g++
 
-COMPILER_FLAGS = -w -g -std=c++11
-LINKER_FLAGS = -lglfw -lGLU -lGL -ldl -lgmp -lCGAL
+COMPILER_FLAGS = -w -g -std=c++14
+# NEED to include lCGAL on laptop
+LINKER_FLAGS = -lglfw -lGLU -lGL -ldl -lgmp 
 LIBRARY_PATH = -Iincludes/ -I/usr/include/
 
 OBJ_NAME = main
