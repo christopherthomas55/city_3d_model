@@ -31,7 +31,8 @@ public:
 
     std::vector<float> roof_vertices;
     std::vector<float> ground_vertices;
-    std::vector<float> platform_vertices;
+    // TODO Maybe? Need to test in cura
+    //std::vector<float> platform_vertices;
 
 
     BuildingHandler(std::string path);

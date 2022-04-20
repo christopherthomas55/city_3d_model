@@ -9,6 +9,7 @@ Building::Building()
 {
 }
 
+// Triangulates assuming every line added is a constraint
 void Building::triangulate(){
 
     T.insert_constraint(vertices[0], vertices[vertices.size()-1]);
@@ -50,7 +51,8 @@ void Building::triangulate(){
     }
 }
 
-// Probably a slicker way of doing this
+// Definitely a slicker way of doing this
+// This is for when I have "preadded" constrainsts
 void Building::triangulate_manual_constraints(){
     // Check if face is in point by using center and seeing if it interects with vertices odd times
     Finite_faces_iterator it;

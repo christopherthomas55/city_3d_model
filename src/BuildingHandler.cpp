@@ -131,9 +131,12 @@ BuildingHandler::BuildingHandler(std::string path){
 
 
     minx -= building_platform_buffer;
-    minx -= building_platform_buffer;
-    miny += building_platform_buffer;
-    miny += building_platform_buffer;
+    miny -= building_platform_buffer;
+    maxx += building_platform_buffer;
+    maxy += building_platform_buffer;
+
+    float boundsx[2]{minx, maxx};
+    float boundsy[2]{miny, maxy};
 
     std::cout << "Inserting ground box constraints" <<  std::endl;
     ground_floor.T.insert_constraint(Point(minx , miny), Point(maxx, miny));  // _
@@ -151,8 +154,93 @@ BuildingHandler::BuildingHandler(std::string path){
     std::cout << "Triangulating ground now" <<  std::endl;
     ground_floor.triangulate_manual_constraints();
 
+    //Sneaking ground triangulations into what was originally roof only
     roof_vertices.insert(roof_vertices.end(), ground_floor.roof_vertices.begin(), ground_floor.roof_vertices.end());
     std::cout << "Done with all triangulation" <<  std::endl;
 
+    // Hard stuff done. Insert sides and bottom now also into roof vector. This is too verbose but oh well, just tryna finish
+    //Sides
+    int y1;
+    int y2;
 
+    for(int i = 0; i<2; i++){
+        //xstuff
+        // Not actually y1, actually x if y and vice versa
+        roof_vertices.push_back(boundsx[i]);
+        roof_vertices.push_back(platform_height);
+        roof_vertices.push_back(boundsy[i]);
+        //
+        roof_vertices.push_back(boundsx[i]);
+        roof_vertices.push_back(0.0f);
+        roof_vertices.push_back(boundsy[i]);
+        //
+        roof_vertices.push_back(boundsx[i]);
+        roof_vertices.push_back(platform_height);
+        roof_vertices.push_back(boundsy[1-i]);
+        //
+        roof_vertices.push_back(boundsx[i]);
+        roof_vertices.push_back(0.0f);
+        roof_vertices.push_back(boundsy[i]);
+        //
+        roof_vertices.push_back(boundsx[i]);
+        roof_vertices.push_back(platform_height);
+        roof_vertices.push_back(boundsy[1-i]);
+        //
+        roof_vertices.push_back(boundsx[i]);
+        roof_vertices.push_back(0.0f);
+        roof_vertices.push_back(boundsy[1-i]);
+
+        //ystuff
+        roof_vertices.push_back(boundsx[i]);
+        roof_vertices.push_back(platform_height);
+        roof_vertices.push_back(boundsy[i]);
+        //
+        roof_vertices.push_back(boundsx[i]);
+        roof_vertices.push_back(0.0f);
+        roof_vertices.push_back(boundsy[i]);
+        //
+        roof_vertices.push_back(boundsx[1-i]);
+        roof_vertices.push_back(platform_height);
+        roof_vertices.push_back(boundsy[i]);
+        //
+        roof_vertices.push_back(boundsx[i]);
+        roof_vertices.push_back(0.0f);
+        roof_vertices.push_back(boundsy[i]);
+        //
+        roof_vertices.push_back(boundsx[1-i]);
+        roof_vertices.push_back(platform_height);
+        roof_vertices.push_back(boundsy[i]);
+        //
+        roof_vertices.push_back(boundsx[1-i]);
+        roof_vertices.push_back(0.0f);
+        roof_vertices.push_back(boundsy[i]);
+    }
+
+    //Bottom
+    roof_vertices.push_back(minx);
+    roof_vertices.push_back(platform_height);
+    roof_vertices.push_back(miny);
+    //
+    roof_vertices.push_back(minx);
+    roof_vertices.push_back(platform_height);
+    roof_vertices.push_back(maxy);
+    //
+    roof_vertices.push_back(maxx);
+    roof_vertices.push_back(platform_height);
+    roof_vertices.push_back(miny);
+    //
+    roof_vertices.push_back(maxx);
+    roof_vertices.push_back(platform_height);
+    roof_vertices.push_back(miny);
+    //
+    roof_vertices.push_back(maxx);
+    roof_vertices.push_back(platform_height);
+    roof_vertices.push_back(maxy);
+    //
+    roof_vertices.push_back(minx);
+    roof_vertices.push_back(platform_height);
+    roof_vertices.push_back(maxy);
+
+    std::cout << "Exporting to stl" <<  std::endl;
+    // TODO
 }

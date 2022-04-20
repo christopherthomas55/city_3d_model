@@ -170,6 +170,8 @@ int main(int argc, char* argv[]){
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         // End camera crap
 
+        // Building sides are triangle strip for each side
+        // Ground is just gl triangles
         glBindVertexArray(VAO);
         for(unsigned int buildingID=0; buildingID < vertexCounter.size(); buildingID++)
         {
