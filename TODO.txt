@@ -1,9 +1,3 @@
-#weekend of march 26-27
-    - Add meshing of top of buildings using CGAL
+Ignoring buildings with overlap for now, there's a chance cura still slices
 
-# week of march 28-02
-    - Figure out wtf to do with weird buildings
-        - Probably add slider/chooser to choose 1 - n building
-    - think of way to mesh main level
-
-
+Just need to export to stl for now
