@@ -19,4 +19,4 @@ all: $(OBJS)
 
 
 city: $(OBJS)
-	$(CXX) building_main.cpp  glad.c src/shader.cpp src/Building.cpp src/BuildingHandler.cpp  $(LIBRARY_PATH) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o test_building
+	$(CXX) city_main.cpp  glad.c src/shader.cpp src/Building.cpp src/BuildingHandler.cpp  $(LIBRARY_PATH) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o city

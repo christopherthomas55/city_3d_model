@@ -1,5 +1,7 @@
 This project is still in the works. Check TODO.txt. All that's really left is to convert to a stl file and see if it prints!
 
+Status  - Generating 3d model in opengl, just needs to be exported to an stl file
+![Houston](city_project_status.png)
 
 Dependencies
 - OpenGL (download glad too)
